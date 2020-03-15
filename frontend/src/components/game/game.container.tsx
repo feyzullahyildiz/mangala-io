@@ -1,9 +1,16 @@
 import React from "react";
 import { WellContainer } from "../well/well.component";
+import io from 'socket.io-client'
 import './game.scss'
 export class GameContainer extends React.Component {
+    constructor(props: any) {
+        super(props)
+        const socket = io('http://localhost:80')
+        socket.on('connect', () => {
+            console.log('CONNECTED')
+        })
+    }
     clickWell() {
-
     }
     render() {
         return <div className="GameContainer">
