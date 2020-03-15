@@ -1,0 +1,21 @@
+.GameContainer {
+    display: flex;
+
+    .well-playground {
+        display: flex;
+        flex-direction: column;
+    }
+    .wells {
+        display: flex;
+    }
+    .store {
+        // height: 100%;
+        width: 80px;
+        border: 1px solid black;
+        border-radius: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+}
