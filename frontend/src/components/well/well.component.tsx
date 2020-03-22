@@ -5,7 +5,7 @@ export class WellContainer extends React.Component<{
     rockCount: number;
 }> {
     render() {
-        return <div className="WellComponent">
+        return <div className="WellComponent" onClick={this.props.onClick}>
             {this.props.rockCount}
         </div>
     }
