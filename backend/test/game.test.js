@@ -159,8 +159,87 @@ describe('Testing Game', function () {
         expect(game.p2rocks).deep.equal([1, 1, 2, 3, 7, 0, 12]);
         expect(game.p1rocks).deep.equal([0, 5, 4, 1, 1, 1, 10]);
         expect(game.turnPlayerId).equal(game.p1Id)
-        
+
 
 
     })
+
+    it('a scenerio that is not tilki', async () => {
+        game.play('p1', 3)
+        game.play('p1', 5)
+
+        game.play('p2', 3)
+        game.play('p2', 5)
+
+        game.play('p1', 5)
+        game.play('p1', 2)
+        game.play('p1', 5)
+        game.play('p1', 4)
+
+        game.play('p2', 5)
+        game.play('p2', 0)
+
+        game.play('p1', 5)
+        game.play('p1', 4)
+
+        game.play('p2', 2)
+
+        game.play('p1', 1)
+
+        expect(game.p2rocks).deep.equal([0, 7, 0, 3, 6, 0, 9])
+        expect(game.p1rocks).deep.equal([0, 1, 2, 3, 1, 1, 15])
+        expect(game.turnPlayerId).equal('p2')
+
+        game.play('p2', 3);
+        expect(game.p2rocks).deep.equal([0, 7, 0, 1, 7, 1, 9])
+        expect(game.p1rocks).deep.equal([0, 1, 2, 3, 1, 1, 15])
+
+
+    })
+
+    it('should reverse tilki', async () => {
+        game.play('p1', 2)
+
+        game.play('p2', 2)
+
+        game.play('p1', 3)
+
+        game.play('p2', 3)
+
+        game.play('p1', 1)
+
+        game.play('p2', 3)
+
+        game.play('p1', 4)
+
+        game.play('p2', 2)
+
+        game.play('p1', 2)
+
+        game.play('p2', 2)
+
+        game.play('p1', 3)
+
+        game.play('p2', 3)
+
+        game.play('p1', 4)
+
+        game.play('p2', 1)
+
+        game.play('p1', 0)
+
+        game.play('p2', 2)
+
+        game.play('p1', 0)
+
+        game.play('p2', 1)
+
+        expect(game.p2rocks).deep.equal([6, 0, 0, 3, 9, 8, 4])
+        expect(game.p1rocks).deep.equal([0, 3, 2, 0, 2, 9, 2])
+        game.play('p1', 5)
+        expect(game.p2rocks).deep.equal([7, 1, 1, 4, 10, 0, 4])
+        expect(game.p1rocks).deep.equal([0, 3, 2, 0, 2, 1, 13])
+
+    })
+
 })

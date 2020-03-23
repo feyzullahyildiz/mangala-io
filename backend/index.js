@@ -23,7 +23,7 @@ const attachPlayerToTheGame = (roomName, socketId) => {
   }
   return game;
 }
-server.listen(8080);
+server.listen(8000);
 // new Game('111', '123', '1121', () => {})
 io.on('connect', (socket) => {
   socket.on('join', (roomName) => {

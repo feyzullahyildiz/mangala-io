@@ -1,3 +1,4 @@
+const { appendLog } = require('./log/log')
 class NoValidError extends Error {
     constructor(a) { super(a) }
 };
@@ -95,8 +96,15 @@ class Game {
         }
 
     }
-    log(playerid, number) {
-        
+    log(playerid, wellNumber) {
+        const val = `
+        ${this.p1Id === playerid ? 'p1' : 'p2'} ${wellNumber} ${playerid}
+             ${playerid === this.p2Id ? `${' '.repeat(15 - (wellNumber * 3)) + ' ↓'}` : ''}
+        |${this.p2rocks[6].toString().padStart(2, '0')}| ${this.p2rocks.filter((_, i) => i < 6).reverse().map(v => `(${v})`).join('')} |  |
+        |  | ${this.p1rocks.filter((_, i) => i < 6).map(v => `(${v})`).join('')} |${this.p1rocks[6].toString().padStart(2, '0')}|
+             ${playerid === this.p1Id ? `${' '.repeat(wellNumber * 3) + ' ↑'}` : ''}
+        `;
+        appendLog(val);
     }
     playerLeaved(pId) {
         this.isPlayStarted = false;
@@ -128,13 +136,15 @@ class Game {
                 return;
             } else if (nextPositionData.wellState === 'me') {
                 this.activePlayerRocks[index] = 0;
+                // tilki check
                 if (this.activePlayerRocks[nextPositionData.index] === 0) {
                     const rivalCrossIndex = 5 - nextPositionData.index;
                     const rivalCrossValue = this.passivePlayerRocks[rivalCrossIndex];
-
-                    this.activePlayerRocks[6] += rivalCrossValue + 1;
-                    this.passivePlayerRocks[rivalCrossIndex] = 0;
-                    return this.nextPlayer();
+                    if (rivalCrossValue !== 0) {
+                        this.activePlayerRocks[6] += rivalCrossValue + 1;
+                        this.passivePlayerRocks[rivalCrossIndex] = 0;
+                        return this.nextPlayer();
+                    }
                 }
                 this.activePlayerRocks[nextPositionData.index] += 1;
                 return this.nextPlayer();
@@ -157,11 +167,13 @@ class Game {
                 if (nextPositionData.wellState === 'me') {
                     if (nextPositionData.array[nextPositionData.index] === 1) {
 
-                        nextPositionData.array[nextPositionData.index] = 0;
                         const data = this.passivePlayerRocks[5 - nextPositionData.index]
-                        this.passivePlayerRocks[5 - nextPositionData.index] = 0;
-                        this.activePlayerRocks[6] += data + 1;
-                        
+                        if(data !== 0) {
+                            nextPositionData.array[nextPositionData.index] = 0;
+                            this.passivePlayerRocks[5 - nextPositionData.index] = 0;
+                            this.activePlayerRocks[6] += data + 1;
+                        }
+
                     }
                     // tilki check
                 } else if (nextPositionData.wellState === 'rival') {
@@ -179,65 +191,6 @@ class Game {
             tempWellValue--
         }
         return this.nextPlayer();
-        const total = wellValue + index;
-        // console.log('total', total, wellValue, index)
-        if (total <= 6) {
-            // tek taş hareket ediyor ise
-            if (wellValue === 1) {
-                this.activePlayerRocks[index] = 0;
-                this.activePlayerRocks[index + 1] += 1;
-                if (index === 5) {
-                    return;
-                }
-            } else {
-                let tempWellValue = wellValue;
-                let tempIndex = index;
-                this.activePlayerRocks[tempIndex] = 0;
-                while (tempWellValue !== 0) {
-                    this.activePlayerRocks[tempIndex] += 1;
-                    tempIndex++;
-                    tempWellValue--;
-                }
-            }
-            this.nextPlayer();
-            return
-        } else if (total === 7) {
-            let tempWellValue = wellValue;
-            let tempIndex = index;
-            this.activePlayerRocks[tempIndex] = 0;
-            while (tempWellValue !== 0) {
-                this.activePlayerRocks[tempIndex] += 1;
-                tempIndex++;
-                tempWellValue--;
-            }
-
-        } else if (total > 7) {
-            let tempIndex = index;
-            let tempWellValue = wellValue;
-            // console.log(this.activePlayerRocks)
-            this.activePlayerRocks[tempIndex] = 0;
-            while (tempWellValue !== 0) {
-                if (tempIndex >= 7) {
-                    // console.log('IF',total,  tempIndex - 7)
-                    const passiveWellIndex = tempIndex - 7;
-                    this.passivePlayerRocks[passiveWellIndex] += 1;
-                    const tempValue = this.passivePlayerRocks[passiveWellIndex];
-                    if (tempWellValue === 1 && tempValue % 2 === 0) {
-                        // console.log('HOPPALA', this.passivePlayerRocks[passiveWellIndex]);
-                        this.passivePlayerRocks[passiveWellIndex] = 0;
-                        this.activePlayerRocks[6] += tempValue;
-                    }
-                } else {
-                    // console.log('ELSE')
-                    this.activePlayerRocks[tempIndex] += 1;
-                }
-                tempWellValue--;
-                tempIndex++;
-
-            }
-            this.nextPlayer();
-            return;
-        }
 
     }
     nextPlayer() {

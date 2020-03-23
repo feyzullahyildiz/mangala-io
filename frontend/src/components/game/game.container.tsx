@@ -61,7 +61,7 @@ export class GameContainer extends React.Component<any, {
             joinedRoom: null,
         }
         // const socket = io('http://localhost:8080');
-        const socket = io('http://192.168.1.34:8080');
+        const socket = io('http://192.168.1.60:8000');
         socket.on('connect', () => {
             console.log('id', socket.id);
             // socket.emit('join', 'room1');
