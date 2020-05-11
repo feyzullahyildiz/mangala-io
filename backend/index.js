@@ -1,8 +1,14 @@
 const Game = require('./game')
-const server = require('http').createServer();
+const express = require('express');
+const app = express();
+const server = require('http').Server(app);
+const path = require('path')
+const buildPath = path.resolve(__dirname, '..', 'frontend', 'build')
+console.log('buildPath', buildPath)
+app.use(express.static(buildPath));
 
 const io = require('socket.io')(server, {
-  path: '/',
+  path: '/socketApi',
   serveClient: false,
   // below are engine.IO options
   pingInterval: 10000,
@@ -24,21 +30,20 @@ const attachPlayerToTheGame = (roomName, socketId) => {
   return game;
 }
 server.listen(8000);
-// new Game('111', '123', '1121', () => {})
 io.on('connect', (socket) => {
   socket.on('join', (roomName) => {
-    console.log('JOIN', roomName)
+    logger('JOIN', roomName)
 
     socket.mangalaRoomName = roomName;
     socket.join(roomName);
     const game = attachPlayerToTheGame(roomName, socket.id);
-    console.log('EMITTING TO ROOM')
+    logger('EMITTING TO ROOM')
     io.in(roomName).emit('room', game.getState());
     // roomsChanged(roomName);
 
   });
   socket.on('leave', () => {
-    console.log('socket leaved')
+    logger('socket leaved')
   })
   socket.on('disconnect', () => {
     if (socket.mangalaRoomName) {
@@ -50,33 +55,29 @@ io.on('connect', (socket) => {
         }
       }
     }
-    console.log('disconnect', socket.id);
-    console.log('socket leaved the room')
+    logger('disconnect', socket.id);
+    logger('socket leaved the room');
   });
   socket.on('play', (wellNumber) => {
     if (!socket.mangalaRoomName) {
-      console.log('socket.mangalaRoomName not found')
+      logger('socket.mangalaRoomName not found')
       return;
     }
     
-    console.log(wellNumber, socket.id)
+    logger(wellNumber, socket.id)
     const game = games.get(socket.mangalaRoomName)
     try {
       const res = game.play(socket.id, wellNumber)
       io.in(socket.mangalaRoomName).emit('room', game.getState())
     } catch (error) {
-      console.log('HOOPLA')
-      // console.log('error', error)
     }
   });
   socket.on('rooms', () => {
     socket.emit('rooms', [...games])
   })
-  // socket.on('create_room', (roomName) => {
-  //   const room = rooms.get(roomName);
-  //   if(room === undefined) {
-  //     getRoom(roomName)
-  //   }
-  // })
 
 })
+
+function logger() {
+
+}

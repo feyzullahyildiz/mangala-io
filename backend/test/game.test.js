@@ -15,51 +15,129 @@ beforeEach(() => {
     game = getValidNewGame();
 })
 describe('Testing Game', function () {
+    it('should test getNextPositionV2', async () => {
+        expect(1).to.eq(1);
+        expect(game.getNextPositionV2(0, 1, game.p1rocks)).to.deep.equal({
+            wellState: 'me',
+            array: game.p1rocks,
+            index: 1
+        });
+        expect(game.getNextPositionV2(0, 4, game.p1rocks)).to.deep.equal({
+            wellState: 'me',
+            array: game.p1rocks,
+            index: 4
+        });
+        expect(game.getNextPositionV2(0, 5, game.p1rocks)).to.deep.equal({
+            wellState: 'me',
+            array: game.p1rocks,
+            index: 5
+        });
+        expect(game.getNextPositionV2(5, 8, game.p1rocks)).to.deep.equal({
+            wellState: 'me',
+            array: game.p1rocks,
+            index: 0
+        });
+        expect(game.getNextPositionV2(5, 9, game.p1rocks)).to.deep.equal({
+            wellState: 'me',
+            array: game.p1rocks,
+            index: 1
+        });
+        // expect(game.getNextPositionV2(5, 2, game.p1rocks)).to.deep.equal({
+        //     wellState: 'rival',
+        //     array: game.p2rocks,
+        //     index: 0
+        // });
+        // expect(game.getNextPositionV2(5, 5, game.p1rocks)).to.deep.equal({
+        //     wellState: 'rival',
+        //     array: game.p1rocks,
+        //     index: 2
+        // });
+        expect(game.getNextPositionV2(5, 1, game.p1rocks)).to.deep.equal({
+            wellState: 'store',
+            array: game.p1rocks,
+            index: 6
+        });
+        expect(game.getNextPositionV2(5, 2, game.p1rocks)).to.deep.equal({
+            wellState: 'rival',
+            array: game.p2rocks,
+            index: 0
+        });
+        expect(game.getNextPositionV2(5, 3, game.p1rocks)).to.deep.equal({
+            wellState: 'rival',
+            array: game.p2rocks,
+            index: 1
+        });
+        expect(game.getNextPositionV2(5, 4, game.p1rocks)).to.deep.equal({
+            wellState: 'rival',
+            array: game.p2rocks,
+            index: 2
+        });
+        expect(game.getNextPositionV2(5, 5, game.p1rocks)).to.deep.equal({
+            wellState: 'rival',
+            array: game.p2rocks,
+            index: 3
+        });
+        expect(game.getNextPositionV2(5, 6, game.p1rocks)).to.deep.equal({
+            wellState: 'rival',
+            array: game.p2rocks,
+            index: 4
+        });
+        expect(game.getNextPositionV2(5, 7, game.p1rocks)).to.deep.equal({
+            wellState: 'rival',
+            array: game.p2rocks,
+            index: 5
+        });
+        expect(game.getNextPositionV2(5, 8, game.p1rocks)).to.deep.equal({
+            wellState: 'me',
+            array: game.p1rocks,
+            index: 0
+        });
+    })
     it('should defined', async () => {
 
     })
-    it('should pass getNextPosition ', async () => {
-        expect(game.getNextPosition(0, game.activePlayerRocks)).deep.equal({
-            index: 1,
-            array: game.activePlayerRocks,
-            wellState: 'me'
-        });
-        expect(game.getNextPosition(1, game.activePlayerRocks)).deep.equal({
-            index: 2,
-            array: game.activePlayerRocks,
-            wellState: 'me'
-        });
-        expect(game.getNextPosition(4, game.activePlayerRocks)).deep.equal({
-            index: 5,
-            array: game.activePlayerRocks,
-            wellState: 'me'
-        });
-        expect(game.getNextPosition(5, game.activePlayerRocks)).deep.equal({
-            index: 6,
-            array: game.activePlayerRocks,
-            wellState: 'store'
-        });
-        expect(game.getNextPosition(6, game.activePlayerRocks)).deep.equal({
-            index: 0,
-            array: game.passivePlayerRocks,
-            wellState: 'rival'
-        });
-        expect(game.getNextPosition(0, game.passivePlayerRocks)).deep.equal({
-            index: 1,
-            array: game.passivePlayerRocks,
-            wellState: 'rival'
-        });
-        expect(game.getNextPosition(3, game.passivePlayerRocks)).deep.equal({
-            index: 4,
-            array: game.passivePlayerRocks,
-            wellState: 'rival'
-        });
-        expect(game.getNextPosition(5, game.passivePlayerRocks)).deep.equal({
-            index: 0,
-            array: game.activePlayerRocks,
-            wellState: 'me'
-        });
-    })
+    // it('should pass getNextPosition ', async () => {
+    //     expect(game.getNextPosition(0, game.activePlayerRocks)).deep.equal({
+    //         index: 1,
+    //         array: game.activePlayerRocks,
+    //         wellState: 'me'
+    //     });
+    //     expect(game.getNextPosition(1, game.activePlayerRocks)).deep.equal({
+    //         index: 2,
+    //         array: game.activePlayerRocks,
+    //         wellState: 'me'
+    //     });
+    //     expect(game.getNextPosition(4, game.activePlayerRocks)).deep.equal({
+    //         index: 5,
+    //         array: game.activePlayerRocks,
+    //         wellState: 'me'
+    //     });
+    //     expect(game.getNextPosition(5, game.activePlayerRocks)).deep.equal({
+    //         index: 6,
+    //         array: game.activePlayerRocks,
+    //         wellState: 'store'
+    //     });
+    //     expect(game.getNextPosition(6, game.activePlayerRocks)).deep.equal({
+    //         index: 0,
+    //         array: game.passivePlayerRocks,
+    //         wellState: 'rival'
+    //     });
+    //     expect(game.getNextPosition(0, game.passivePlayerRocks)).deep.equal({
+    //         index: 1,
+    //         array: game.passivePlayerRocks,
+    //         wellState: 'rival'
+    //     });
+    //     expect(game.getNextPosition(3, game.passivePlayerRocks)).deep.equal({
+    //         index: 4,
+    //         array: game.passivePlayerRocks,
+    //         wellState: 'rival'
+    //     });
+    //     expect(game.getNextPosition(5, game.passivePlayerRocks)).deep.equal({
+    //         index: 0,
+    //         array: game.activePlayerRocks,
+    //         wellState: 'me'
+    //     });
+    // })
     it('should basic start', async () => {
         expect(game.p1rocks).deep.equal(initWellArray());
         game.play('p1', 1);
@@ -240,6 +318,15 @@ describe('Testing Game', function () {
         expect(game.p2rocks).deep.equal([7, 1, 1, 4, 10, 0, 4])
         expect(game.p1rocks).deep.equal([0, 3, 2, 0, 2, 1, 13])
 
+    })
+    it('ters tilki check 2', () => {
+        game.p1rocks = [0, 2, 2, 3, 10, 9, 4];
+        game.p2rocks = [4, 4, 1, 1, 1, 1, 6];
+        game.setActivePlayer('p2');
+        game.play('p2', 4)
+        game.play('p1', 5)
+        expect(game.p1rocks).deep.eq([0, 2, 2, 3, 10, 1, 9]);
+        expect(game.p2rocks).deep.eq([5, 5, 2, 2, 1, 0, 6]);
     })
 
 })

@@ -22,7 +22,8 @@ interface GameState {
 
 }
 const getCalculatedGameState = (id: string, state: GameState): CalculatedGameState | null => {
-    if (state.state !== 'started' || !state.data || !state.turn) {
+    if (state.state === undefined || !state.data || !state.turn) {
+        console.log('state.state return null')
         return null;
     }
     console.log('state', state)
@@ -42,10 +43,6 @@ const getCalculatedGameState = (id: string, state: GameState): CalculatedGameSta
         rivalWells,
         yourWells
     }
-
-
-    return null;
-
 }
 export class GameContainer extends React.Component<any, {
     rooms: [string, string[]][];
@@ -60,21 +57,20 @@ export class GameContainer extends React.Component<any, {
             rooms: [],
             joinedRoom: null,
         }
-        // const socket = io('http://localhost:8080');
-        const socket = io('http://192.168.1.60:8000');
+        const socket = io('http://localhost:8000', {
+            path: '/socketApi'
+        });
+        // const socket = io('http://192.168.1.60:8000');
         socket.on('connect', () => {
-            console.log('id', socket.id);
             // socket.emit('join', 'room1');
             (window as any).socket = socket;
             // socket.on('play_update', (data: any) => {
             //     console.log('play update', data);
             // });
             socket.on('info', (data: Info) => {
-                console.log('info', data);
                 this.setState({ rooms: data.rooms })
             })
             socket.on('room', (room: GameState) => {
-                // console.log('room', room);
                 room.calculatedState = getCalculatedGameState(this.socket.id, room);
                 console.log('calculatedState', room);
                 this.setState({ joinedRoom: room })
@@ -91,7 +87,6 @@ export class GameContainer extends React.Component<any, {
         this.socket.emit('rooms');
     }
     clickWell = (wellNumber: number) => {
-        console.log('clickWell', wellNumber);
         this.socket.emit('play', wellNumber)
     }
     createRoom = () => {
@@ -102,77 +97,52 @@ export class GameContainer extends React.Component<any, {
         }
     }
     joinRoom = (val: string) => this.socket.emit('join', val);
-    // rivalWells = () => {
-    //     if (!this.state.joinedRoom) {
-    //         return null;
-    //     }
-    //     const { state, turn, data } = this.state.joinedRoom;
-    //     if (!data) {
-    //         console.log('rival user not found ?')
-    //         return null;
-    //     }
-    //     const idArray = Object.keys(data)
-    //     const rivalId = idArray.find((id) => this.socket.id !== id);
-    //     if (!rivalId) {
-    //         console.log('rivalId not found', data, this.socket.id);
-    //         return null;
-    //     }
-    //     const wellValues = data[rivalId] as number[];
-    //     const wellArray = [];
-    //     for (let i = 0; i < 6; i++) {
-    //         wellArray.push(<WellContainer key={i} rockCount={wellValues[i]} />)
-    //     }
-    //     return wellArray;
-    //     // return data.map(())
-    // }
-    // yourWells = () => {
-
-    // }
     render() {
         const joinedRoom = this.state.joinedRoom;
         const calculatedState = this.state.joinedRoom?.calculatedState;
-        console.log('calculatedState', calculatedState)
         return <div>
             {calculatedState ?
                 <>
                     <div className="GameContainer">
-                        <div className="store">RIVALS STORE {calculatedState.rivalStore}</div>
+                        <div className="store">Rakip Kuyu {calculatedState.rivalStore}</div>
                         <div className="well-playground">
 
                             <div className="wells rival">
                                 {calculatedState.rivalWells.map((val, i) =>
-                                    <WellContainer key={i} rockCount={val} />
+                                    <WellContainer
+                                        key={i}
+                                        rival={true}
+                                        disabled={true}
+                                        rockCount={val}
+                                    />
                                 )}
 
                             </div>
                             <div className="wells me">
                                 {calculatedState.yourWells.map((val, i) =>
                                     <WellContainer
+                                        key={i}
+                                        rival={false}
+                                        disabled={joinedRoom?.turn !== this.socket.id}
                                         onClick={() => this.clickWell(i)}
-                                        key={i} rockCount={val}
+                                        rockCount={val}
                                     />
                                 )}
-                                {/* <WellContainer onClick={() => this.clickWell(0)} rockCount={4} />
-                                <WellContainer onClick={() => this.clickWell(1)} rockCount={4} />
-                                <WellContainer onClick={() => this.clickWell(2)} rockCount={4} />
-                                <WellContainer onClick={() => this.clickWell(3)} rockCount={4} />
-                                <WellContainer onClick={() => this.clickWell(4)} rockCount={4} />
-                                <WellContainer onClick={() => this.clickWell(5)} rockCount={4} /> */}
                             </div>
                         </div>
-                        <div className="store">YOUR STORE {calculatedState.yourStore}</div>
+                        <div className="store">Merkez Kuyu {calculatedState.yourStore}</div>
                     </div>
                     <div style={{ margin: '16px' }}>
                         SIRA: {joinedRoom?.turn === this.socket.id ? 'sende' : 'rakipte'}
                     </div>
                 </> : null}
 
-
+            {`STATE ${joinedRoom?.state}`}
             <div className="room-container" style={{ margin: '16px' }}>
                 <div className="room-form">
                     <input type="text" ref={this.roomNameIntpuRef} />
                     <button onClick={this.createRoom}>Oda Oluştur</button>
-                    <button>Odadan Çık</button>
+                    {/* <button>Odadan Çık</button> */}
                     <button onClick={this.refreshRooms}>Odaları Yenile</button>
                 </div>
                 <div className="rooms">

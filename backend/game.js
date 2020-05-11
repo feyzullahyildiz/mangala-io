@@ -15,28 +15,58 @@ class Game {
         // this.setActivePlayer(this.turnPlayerId)
         this.isPlayStarted = false;
     }
-    getNextPosition(num, array) {
-        if (num < 0) {
-            throw new NoValidError('num is not in the range: ', num);
-        }
-        if (array === this.activePlayerRocks) {
-            if (num <= 4) {
-                return { index: num + 1, array, wellState: 'me' }
-            } else if (num === 5) {
-                return { index: 6, array, wellState: 'store' }
-            } else if (num === 6) {
-                return { index: 0, array: this.passivePlayerRocks, wellState: 'rival' }
+    getNextPositionV2(index, count, array) {
+        const total = (index + count) % 13 ;
+        if(total < 6) {
+            return {
+                wellState: 'me',
+                array,
+                index: total
             }
-            throw new NoValidError('num is not in the range: ', num);
+        }
+        if(total === 6) {
+            return {
+                wellState: 'store',
+                array,
+                index: total
+            }
+        }
 
-        } else if (array === this.passivePlayerRocks) {
-            if (num <= 4) {
-                return { index: num + 1, array: this.passivePlayerRocks, wellState: 'rival' }
-            } else if (num === 5) {
-                return { index: 0, array, wellState: 'me' }
+        if(total > 6) {
+            return {
+                wellState: 'rival',
+                array: this.p1rocks === array ? this.p2rocks : this.p1rocks,
+                index: 6- (13  - total)
             }
         }
-        throw new NoValidError('num is not in the range: ', num);
+        // this.p1rocks;
+        // 0, 1, 2, 3, 4, 5, 6
+        // ORN index 0 count 5 => me:5
+        // ORN index 1 count 5 => store:6
+        // ORN index 5 count 1 => store:6       // 5 + 1 = 6 S
+
+        /**
+         * index 5 yani p1'in son kuyusu sonrasında depo var.
+         * count 1 ise store 6
+         * count 2 ise rival 0
+         * count 3 ise rival 1
+         * count 4 ise rival 2
+         * count 5 ise rival 3
+         * count 6 ise rival 4
+         * count 7 ise rival 5
+         * count 8 ise me 0
+         */
+        
+        
+        
+
+        // ORN index 2 count 5 => rival:0       // 13 - 7 => 6
+        
+        // ORN index 5 count 5 => rival:2       // (13 - 10 => 3) ama 2 olmalı
+        
+        // ORN index 5 count 8 => me:0          // 13 - 13 => 0
+        // ORN index 5 count 9 => me:1          // 13 - 14 => -1
+
     }
     setPlayer(id) {
         if (this.isPlayStarted) {
@@ -56,16 +86,17 @@ class Game {
         }
         throw new NoValidError('unexpected error while setting a player')
     }
-    play(playerid, number) {
+    play(playerid, index) {
         try {
-            this.checkValidation(playerid, number);
+            this.checkValidation(playerid, index);
             this.setActivePlayer(playerid);
-            this.playground(number);
-            this.log(playerid, number);
+            this.playground(index);
+            this.log(playerid, index);
             return {
                 [this.p1Id]: this.p1rocks,
                 [this.p2Id]: this.p2rocks,
                 turn: this.turnPlayerId,
+                index
             }
         } catch (error) {
             // this.callback(error)
@@ -87,6 +118,11 @@ class Game {
         if (this.p1Id || this.p2Id) {
             return {
                 state: 'waiting_for_user',
+                data: {
+                    [this.p1Id]: this.p1rocks,
+                    [this.p2Id]: this.p2rocks,
+                },
+                turn: this.turnPlayerId,
             }
         }
         if (this.p1Id === null && this.p2Id === null) {
@@ -109,11 +145,9 @@ class Game {
     playerLeaved(pId) {
         this.isPlayStarted = false;
         if (this.p1Id === pId) {
-            console.log('playerLeaved this.p1Id: ', pId);
             this.p1Id = null;
         }
         if (this.p2Id === pId) {
-            console.log('playerLeaved this.p2Id: ', pId);
             this.p2Id = null;
         }
         if (this.p1Id === null && this.p2Id === null) {
@@ -127,9 +161,9 @@ class Game {
         }
 
         let tempWellValue = wellValue;
-        let activeArray = this.activePlayerRocks;
+        // let activeArray = this.activePlayerRocks;
         if (wellValue === 1) {
-            const nextPositionData = this.getNextPosition(index, activeArray);
+            const nextPositionData = this.getNextPositionV2(index, 1, this.activePlayerRocks);
             if (nextPositionData.wellState === 'store') {
                 this.activePlayerRocks[index] = 0;
                 this.activePlayerRocks[nextPositionData.index] += 1;
@@ -155,12 +189,15 @@ class Game {
         }
         this.activePlayerRocks[index] = 1;
         tempWellValue--;
-        let oldArray = this.activePlayerRocks;
-        let oldIndex = index;
+        // let oldArray = this.activePlayerRocks;
+        // let oldIndex = index;
+        // const selectedWellIndex = index;
+        let nextIndexValue = 0;
         while (tempWellValue !== 0) {
-            const nextPositionData = this.getNextPosition(oldIndex, oldArray);
-            oldArray = nextPositionData.array;
-            oldIndex = nextPositionData.index;
+            nextIndexValue++;
+            const nextPositionData = this.getNextPositionV2(index, nextIndexValue, this.activePlayerRocks);
+            // const oldArray = nextPositionData.array;
+            // const oldIndex = nextPositionData.index;
             nextPositionData.array[nextPositionData.index] += 1;
             // array[index] += 1;
             if (tempWellValue === 1) {

@@ -3,14 +3,33 @@
     height: 50px;
     border-radius: 50%;
     border: 1px solid black;
-    cursor: pointer;
     display: flex;
     justify-content: center;
     align-items: center;
     margin: 4px;
     padding: 4px;
     user-select: none;
-    &:hover {
-        background-color: rgba($color: #000000, $alpha: .1);
+    color: white;
+    &.allowed {
+        cursor: pointer;
+        &:hover {
+            background-color: rgba($color: #000000, $alpha: .3);
+        }
+
+    }
+    &.disabled {
+        cursor: default
+    }
+    &.rival {
+        background-color: #ec407a;
+    }
+    &.me {
+        background-color: #4caf50;
+    }
+    transition-property: background-color;
+    transition-duration: .4s;
+    transition-timing-function: ease-out;
+    &.splash {
+        background-color: blue;
     }
 }
