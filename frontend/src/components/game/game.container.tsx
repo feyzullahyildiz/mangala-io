@@ -57,7 +57,8 @@ export class GameContainer extends React.Component<any, {
             rooms: [],
             joinedRoom: null,
         }
-        const socket = io('http://localhost:8000', {
+        console.log('process.env.REACT_APP_API_URL', process.env.REACT_APP_API_URL);
+        const socket = io(process.env.REACT_APP_API_URL as string, {
             path: '/socketApi'
         });
         // const socket = io('http://192.168.1.60:8000');
